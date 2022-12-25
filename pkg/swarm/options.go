@@ -1,4 +1,4 @@
-package tinyagent
+package swarm
 
 import (
 	"github.com/docker/docker/api/types"
@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	SupportedDockerAPIVersion = "1.24"
+	SupportedDockerAPIVersion = "1.30"
 )
 
 type (

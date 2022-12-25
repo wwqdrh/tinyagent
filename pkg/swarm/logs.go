@@ -1,4 +1,4 @@
-package tinyagent
+package swarm
 
 import (
 	"bytes"
