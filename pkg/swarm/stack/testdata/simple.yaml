@@ -1,0 +1,19 @@
+version: "3.9"
+
+networks:
+  dev:
+    external: true
+
+configs:
+  nginx_config:
+    file: ./conf/nginx/app.conf
+
+volumes:
+  nginx_store:
+    external: true
+
+services:
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50005"]
+  

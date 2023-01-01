@@ -4,8 +4,9 @@ go 1.18
 
 require (
 	github.com/docker/docker v20.10.22+incompatible
-	github.com/wwqdrh/gokit/logger v0.0.0-20221223141034-b5982e35a7f9
+	github.com/wwqdrh/gokit/logger v0.0.0-20221227105002-01ff58dac304
 	go.uber.org/zap v1.21.0
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
 require (
