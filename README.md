@@ -29,3 +29,14 @@ curl localhost:8000/swarm/config/update --form name=testname --form "content=@./
 ```bash
 curl localhost:8000/swarm/config/remove -H "Content-Type: application/json" -d '{"name": "testname"}'
 ```
+
+## common service
+
+- start: 启动服务
+- desc: 描述如何启动的服务
+
+### redis
+
+```bash
+agentcli start redis
+```
