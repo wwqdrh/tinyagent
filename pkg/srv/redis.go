@@ -34,6 +34,9 @@ type RedisSrvOpt struct {
 	Name     string
 	Port     int
 	Password string
+	Mode     string
+	Network  string
+	Pull     bool
 }
 
 func NewRedisSrv() ISrv {
@@ -55,6 +58,12 @@ func (s *RedisSrv) SetOpt(name string, val interface{}) {
 		s.opt.Port = val.(int)
 	case "password":
 		s.opt.Password = val.(string)
+	case "mode":
+		s.opt.Mode = val.(string)
+	case "network":
+		s.opt.Network = val.(string)
+	case "pull":
+		s.opt.Pull = val.(bool)
 	default:
 		logger.DefaultLogger.Warnx("no this opt %s", nil, name)
 	}
@@ -82,19 +91,28 @@ func (s RedisSrv) redisConf() (string, error) {
 	return filepath.Abs("./redis.conf")
 }
 
-func (s RedisSrv) Start() {
+func (s RedisSrv) actions() (res []CurCmd) {
 	conf, err := s.redisConf()
 	if err != nil {
 		logger.DefaultLogger.Error(err.Error())
 		return
 	}
 
-	actions := []CurCmd{
-		{Base: "docker", Args: strings.Split("pull redis:6-alpine", " ")},
-		{Base: "docker", Args: strings.Split(fmt.Sprintf(`run -d --name %s -v %s:/etc/redis/redis.conf -p %d:6379 redis:6-alpine redis-server /etc/redis/redis.conf`, s.opt.Name, conf, s.opt.Port), " ")},
+	if s.opt.Pull {
+		res = append(res, CurCmd{Base: "docker", Args: strings.Split("pull redis:6-alpine", " ")})
 	}
 
-	for _, item := range actions {
+	if s.opt.Mode == "basic" {
+		res = append(res, CurCmd{Base: "docker", Args: strings.Split(fmt.Sprintf(`run -d --name %s -v %s:/etc/redis/redis.conf -p %d:6379 redis:6-alpine redis-server /etc/redis/redis.conf`, s.opt.Name, conf, s.opt.Port), " ")})
+	} else if s.opt.Mode == "swarm" {
+		res = append(res, CurCmd{Base: "docker", Args: strings.Split(fmt.Sprintf(`service create --name %s --network %s --mount type=bind,src=%s,dst=/etc/redis/redis.conf redis:6-alpine redis-server /etc/redis/redis.conf`, s.opt.Name, s.opt.Network, conf), " ")})
+	}
+
+	return res
+}
+
+func (s RedisSrv) Start() {
+	for _, item := range s.actions() {
 		stdout, stderr, err := RunAndWait(exec.Command(item.Base, item.Args...))
 		if err != nil || stderr != "" {
 			logger.DefaultLogger.Error(err.Error())

@@ -11,7 +11,7 @@
             "mode": "auto",
             "program": "${workspaceFolder}/cmd/agentcli/main.go",
             "args": [
-                "start", "redis"
+                "start", "redis", "--mode", "swarm", "--network", "dev"
             ]
         }
     ]
