@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/wwqdrh/gokit/clitool"
@@ -10,7 +11,7 @@ import (
 
 var (
 	startOpt = struct {
-		Name string
+		List bool
 	}{}
 
 	startRedisOpt = struct {
@@ -27,20 +28,40 @@ var (
 	}{}
 )
 
+func main() {
+	cmd := clitool.Command{
+		Cmd: &cobra.Command{
+			RunE: func(cmd *cobra.Command, args []string) error {
+				return cmd.Usage()
+			},
+		},
+	}
+	cmd.Add(startCommand())
+	cmd.Add(descCommand())
+	cmd.Run()
+}
+
 func startCommand() *clitool.Command {
 	cmd := &clitool.Command{
 		Cmd: &cobra.Command{
 			Use: "start",
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return cmd.Usage()
+				if startOpt.List {
+					fmt.Println("支持的服务列表如下:")
+					fmt.Println(strings.Join(srv.SrvList(), "\n"))
+					return nil
+				} else {
+					return cmd.Usage()
+				}
 			},
 		},
 		Options: []clitool.OptionConfig{
 			{
-				Target:      "Name",
-				Name:        "name",
-				Description: "启动的服务名称",
-				Required:    true,
+				Target:       "List",
+				Name:         "list",
+				Alias:        "l",
+				Description:  "列出所有支持的服务列表",
+				DefaultValue: false,
 			},
 		},
 		Values: &startOpt,
@@ -109,18 +130,8 @@ func startCommand() *clitool.Command {
 	return cmd
 }
 
-func main() {
-	cmd := clitool.Command{
-		Cmd: &cobra.Command{
-			RunE: func(cmd *cobra.Command, args []string) error {
-				return cmd.Usage()
-			},
-		},
-	}
-
-	cmd.Add(startCommand())
-
-	cmd.Add(&clitool.Command{
+func descCommand() *clitool.Command {
+	return &clitool.Command{
 		Cmd: &cobra.Command{
 			Use: "desc",
 			RunE: func(cmd *cobra.Command, args []string) error {
@@ -137,7 +148,5 @@ func main() {
 			},
 		},
 		Values: &descOpt,
-	})
-
-	cmd.Run()
+	}
 }
