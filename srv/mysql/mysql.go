@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/wwqdrh/gokit/logger"
-	"github.com/wwqdrh/tinyagent/pkg/srv/base"
+	"github.com/wwqdrh/tinyagent/srv/base"
 )
 
 var (

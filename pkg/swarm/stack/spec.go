@@ -18,33 +18,14 @@ type StackYaml struct {
 	Services map[string]StackYamlService `yaml:"services"`
 }
 
-type StackYamlNetwork struct {
-	External bool `yaml:"external"`
-}
-
-type StackYamlConfig struct {
-	File     string `yaml:"file"`
-	External bool   `yaml:"external"`
-}
-
-type StackYamlVolume struct {
-	External bool `yaml:"external"`
-}
-
-type StackYamlService struct {
-	Image       string   `yaml:"image"`
-	Command     string   `yaml:"command"`
-	Networks    []string `yaml:"networks"`
-	Environment []string `yaml:"environment"`
-	Deploy      struct {
-		Replicas int `yaml:"replicas" default:"1"`
-	} `yaml:"deploy"`
-	Configs []struct {
-		Source string `yaml:"source"`
-		Target string `yaml:"target"`
-	} `yaml:"configs"`
-	Volumes []string `yaml:"volumes"` // [name]:[target] 如果name只一个volume name那么type就是volume模式，否则就是bind模式
-	Ports   []string `yaml:"ports"`
+func NewEmptyStackYaml() *StackYaml {
+	return &StackYaml{
+		Version:  "3.9",
+		Networks: map[string]StackYamlNetwork{},
+		Configs:  map[string]StackYamlConfig{},
+		Volumes:  map[string]StackYamlVolume{},
+		Services: map[string]StackYamlService{},
+	}
 }
 
 func NewStackYamlFromFile(f string) (StackYaml, error) {
@@ -60,6 +41,60 @@ func NewStackYamlFromFile(f string) (StackYaml, error) {
 		return StackYaml{}, err
 	}
 	return res, nil
+}
+
+func (c *StackYaml) Active() bool {
+	for _, network := range c.Networks {
+		network.Active()
+	}
+
+	for _, conf := range c.Configs {
+		conf.Active()
+	}
+
+	for _, srv := range c.Services {
+		srv.Active()
+	}
+
+	for _, volume := range c.Volumes {
+		volume.Active()
+	}
+
+	return false
+}
+
+func (c *StackYaml) ExportYaml() (string, error) {
+	data, err := yaml.Marshal(c)
+	if err != nil {
+		logger.DefaultLogger.Warn(err.Error())
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (c *StackYaml) AddService(name string, srv StackYamlService) {
+	c.Services[name] = srv
+}
+
+func (c *StackYaml) AddServiceFromString(name string, data string) error {
+	srv, err := NewServiceFromYamlString([]byte(data))
+	if err != nil {
+		return err
+	}
+	c.AddService(name, srv)
+	return nil
+}
+
+func (c *StackYaml) AddNetwork(name string, external bool) {
+	c.Networks[name] = StackYamlNetwork{
+		External: external,
+	}
+}
+
+func (c *StackYaml) AddVolume(name string, external bool) {
+	c.Volumes[name] = StackYamlVolume{
+		External: external,
+	}
 }
 
 // TODO: 将basetool.datax里面的LoadDefault提供嵌套能力

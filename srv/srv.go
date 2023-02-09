@@ -3,8 +3,8 @@ package srv
 import (
 	"fmt"
 
-	"github.com/wwqdrh/tinyagent/pkg/srv/base"
-	"github.com/wwqdrh/tinyagent/pkg/srv/redis"
+	"github.com/wwqdrh/tinyagent/srv/base"
+	"github.com/wwqdrh/tinyagent/srv/redis"
 )
 
 var (
