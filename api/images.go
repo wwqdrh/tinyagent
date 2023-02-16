@@ -1,7 +1,6 @@
 package api
 
 import (
-	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -52,13 +51,8 @@ func ImagePull(w http.ResponseWriter, r *http.Request) {
 		EchoError(w, ServerError, err)
 		return
 	}
-	res, err := ioutil.ReadAll(out)
-	if err != nil {
-		EchoError(w, ServerError, err)
-		return
-	}
 	EchoJSON(w, ServerOK, ImagePullRes{
-		Detail: strings.Split(string(res), "\n"),
+		Detail: strings.Split(out, "\n"),
 	})
 }
 
