@@ -2,7 +2,9 @@ package srv
 
 import (
 	"fmt"
+	"strconv"
 
+	"github.com/wwqdrh/gokit/logger"
 	"github.com/wwqdrh/tinyagent/pkg/swarm"
 )
 
@@ -18,6 +20,26 @@ type BitnamiRedisOpt struct {
 	Ports    map[int]int
 }
 
+func (o *BitnamiRedisOpt) SetOpt(name, value string) {
+	switch name {
+	case "name":
+		o.Name = value
+	case "image":
+		o.Image = value
+	case "password":
+		o.Password = value
+	case "network":
+		o.Network = value
+	case "port":
+		v, err := strconv.ParseInt(value, 10, 64)
+		if err != nil {
+			logger.DefaultLogger.Warn(err.Error())
+		} else {
+			o.Ports[int(v)] = 6379
+		}
+	}
+}
+
 func (o *BitnamiRedisOpt) envs() (res []string) {
 	if o.Password == "" {
 		res = append(res, "ALLOW_EMPTY_PASSWORD=yes")
@@ -28,6 +50,10 @@ func (o *BitnamiRedisOpt) envs() (res []string) {
 }
 
 func (o *BitnamiRedisOpt) Start() error {
+	if o.Image == "" {
+		o.Image = "bitnami/redis:6.2"
+	}
+
 	res, err := swarm.ServiceCreate(
 		swarm.ServiceOpt{
 			Name:    o.Name,

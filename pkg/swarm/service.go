@@ -30,6 +30,16 @@ func (s *ServiceOpt) GetPorts() (res []swarm.PortConfig) {
 	return
 }
 
+func ServiceExist(name string) (swarm.Service, []byte, error) {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	if err != nil {
+		return swarm.Service{}, nil, err
+	}
+	defer cli.Close()
+
+	return cli.ServiceInspectWithRaw(context.Background(), name, types.ServiceInspectOptions{})
+}
+
 func ServiceCreate(opt ServiceOpt) (types.ServiceCreateResponse, error) {
 	if err := ImageExist(opt.Image); err != nil {
 		if err != ErrImageNotExist {

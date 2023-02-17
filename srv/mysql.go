@@ -2,7 +2,9 @@ package srv
 
 import (
 	"fmt"
+	"strconv"
 
+	"github.com/wwqdrh/gokit/logger"
 	"github.com/wwqdrh/tinyagent/pkg/swarm"
 )
 
@@ -12,6 +14,26 @@ type BitnamiMysqlOpt struct {
 	Password string // if empty, equals ALLOW_EMPTY_PASSWORD=yes
 	Network  string
 	Ports    map[int]int
+}
+
+func (o *BitnamiMysqlOpt) SetOpt(name, value string) {
+	switch name {
+	case "name":
+		o.Name = value
+	case "image":
+		o.Image = value
+	case "password":
+		o.Password = value
+	case "network":
+		o.Network = value
+	case "port":
+		v, err := strconv.ParseInt(value, 10, 64)
+		if err != nil {
+			logger.DefaultLogger.Warn(err.Error())
+		} else {
+			o.Ports[int(v)] = 3306
+		}
+	}
 }
 
 func (o *BitnamiMysqlOpt) envs() (res []string) {
@@ -24,6 +46,10 @@ func (o *BitnamiMysqlOpt) envs() (res []string) {
 }
 
 func (o *BitnamiMysqlOpt) Start() error {
+	if o.Image == "" {
+		o.Image = "bitnami/mysql:8.0"
+	}
+
 	res, err := swarm.ServiceCreate(
 		swarm.ServiceOpt{
 			Name:    o.Name,
