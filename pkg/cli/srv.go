@@ -49,6 +49,7 @@ var (
 		Image        string `name:"image"`
 		ClientPort   int    `name:"clientport" desc:"example:2379,用于客户端链接"`
 		PeerPort     int    `name:"peerport" desc:"example:2380,用于集群之间链接"`
+		Password     string `name:"password"`
 		Network      string `name:"network"`
 		AdvertiseUrl string `name:"advertiseurl"`
 	}{
@@ -117,6 +118,7 @@ func NewSrvStartCommand() *clitool.Command {
 				return (&srv.BitnamiEtcdOpt{
 					Name:                       startEtcdOpt.Name,
 					Image:                      startEtcdOpt.Image,
+					Password:                   startEtcdOpt.Password,
 					Network:                    startEtcdOpt.Network,
 					Ports:                      map[int]int{startEtcdOpt.ClientPort: 2379, startEtcdOpt.PeerPort: 2380},
 					ETCD_ADVERTISE_CLIENT_URLS: startEtcdOpt.AdvertiseUrl,
