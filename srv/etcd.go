@@ -46,6 +46,7 @@ func (o *BitnamiEtcdOpt) Start() error {
 			Image:   o.Image,
 			Env:     o.envs(),
 			Network: o.Network,
+			Ports:   o.Ports,
 		},
 	)
 	if err != nil {

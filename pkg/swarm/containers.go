@@ -18,17 +18,17 @@ func ContainerStart(name string, opts types.ContainerStartOptions) error {
 	})
 }
 
-func ContainerRestart(name string) error {
-	return withCli(func(cli *client.Client) error {
-		return cli.ContainerRestart(context.Background(), name, &DefaultTimeout)
-	})
-}
+// func ContainerRestart(name string) error {
+// 	return withCli(func(cli *client.Client) error {
+// 		return cli.ContainerRestart(context.Background(), name, &DefaultTimeout)
+// 	})
+// }
 
-func ContainerStop(name string) error {
-	return withCli(func(cli *client.Client) error {
-		return cli.ContainerStop(context.Background(), name, &DefaultTimeout)
-	})
-}
+// func ContainerStop(name string) error {
+// 	return withCli(func(cli *client.Client) error {
+// 		return cli.ContainerStop(context.Background(), name, &DefaultTimeout)
+// 	})
+// }
 
 func ContainerKill(name string) error {
 	return withCli(func(cli *client.Client) error {
