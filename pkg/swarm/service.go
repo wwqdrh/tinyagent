@@ -19,6 +19,10 @@ type ServiceOpt struct {
 
 func (s *ServiceOpt) GetPorts() (res []swarm.PortConfig) {
 	for hport, cport := range s.Ports {
+		if hport == 0 {
+			// 不对外暴露端口
+			continue
+		}
 		res = append(res, swarm.PortConfig{
 			Name:          fmt.Sprintf("%s_%d", s.Name, hport),
 			Protocol:      swarm.PortConfigProtocolTCP,
