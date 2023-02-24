@@ -16,3 +16,21 @@ func TestServiceExist(t *testing.T) {
 	fmt.Println(string(data))
 	fmt.Println(err)
 }
+
+func TestClientIP(t *testing.T) {
+	ip, err := getClientIp("eth0")
+	if err != nil {
+		t.Error(err)
+	} else {
+		fmt.Println(ip)
+	}
+}
+
+func TestGetCurrentService(t *testing.T) {
+	srvid, err := CurrentService()
+	if err != nil {
+		t.Error(err)
+	} else {
+		fmt.Println(srvid)
+	}
+}

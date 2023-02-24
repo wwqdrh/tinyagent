@@ -2,11 +2,14 @@ package swarm
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
+	"github.com/wwqdrh/gokit/logger"
 )
 
 type ServiceOpt struct {
@@ -90,4 +93,62 @@ func ServiceRemove(name string) error {
 	defer cli.Close()
 
 	return cli.ServiceRemove(context.Background(), name)
+}
+
+// 获取当前运行程序位置的service
+// 需要指定是哪一个overlay环境下的
+func CurrentService() (string, error) {
+	curip, err := getClientIp("eth0")
+	if err != nil {
+		return "", err
+	}
+
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	if err != nil {
+		logger.DefaultLogger.Error(err.Error())
+		return "", err
+	}
+	defer cli.Close()
+
+	networks, err := cli.NetworkList(context.TODO(), types.NetworkListOptions{})
+	if err != nil {
+		return "", err
+	}
+
+	for _, network := range networks {
+		res, err := cli.NetworkInspect(context.TODO(), network.ID, types.NetworkInspectOptions{})
+		if err != nil {
+			logger.DefaultLogger.Error(err.Error())
+			return "", err
+		}
+
+		for _, srv := range res.Containers {
+			if srv.IPv4Address == curip {
+				return srv.Name, nil
+			}
+		}
+	}
+
+	return "", errors.New("not found")
+}
+
+// 寻找eth0这个网卡对应的ip
+func getClientIp(device string) (string, error) {
+	inter, err := net.InterfaceByName(device)
+	if err != nil {
+		return "", err
+	}
+	addrs, err := inter.Addrs()
+	if err != nil {
+		return "", err
+	}
+
+	for _, address := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			return ipnet.String(), nil
+		}
+	}
+
+	return "", errors.New("can not find the client ip address")
 }
