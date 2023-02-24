@@ -2,9 +2,14 @@ package swarm
 
 import (
 	"context"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+)
+
+var (
+	DefaultTimeout = 1 * time.Minute
 )
 
 func ContainerStart(name string, opts types.ContainerStartOptions) error {
@@ -15,13 +20,13 @@ func ContainerStart(name string, opts types.ContainerStartOptions) error {
 
 func ContainerRestart(name string) error {
 	return withCli(func(cli *client.Client) error {
-		return cli.ContainerRestart(context.Background(), name, nil)
+		return cli.ContainerRestart(context.Background(), name, &DefaultTimeout)
 	})
 }
 
 func ContainerStop(name string) error {
 	return withCli(func(cli *client.Client) error {
-		return cli.ContainerStop(context.Background(), name, nil)
+		return cli.ContainerStop(context.Background(), name, &DefaultTimeout)
 	})
 }
 
