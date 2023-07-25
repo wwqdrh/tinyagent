@@ -18,6 +18,7 @@ type ServiceOpt struct {
 	Env     []string
 	Ports   map[int]int
 	Network string
+	Command []string
 }
 
 func (s *ServiceOpt) GetPorts() (res []swarm.PortConfig) {
@@ -71,8 +72,9 @@ func ServiceCreate(opt ServiceOpt) (types.ServiceCreateResponse, error) {
 		},
 		TaskTemplate: swarm.TaskSpec{
 			ContainerSpec: &swarm.ContainerSpec{
-				Image: opt.Image,
-				Env:   opt.Env,
+				Image:   opt.Image,
+				Env:     opt.Env,
+				Command: opt.Command,
 			},
 			Networks: []swarm.NetworkAttachmentConfig{
 				{Target: opt.Network},

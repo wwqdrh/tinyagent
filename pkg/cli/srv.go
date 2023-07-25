@@ -30,6 +30,7 @@ var (
 		Name:     "mysql8",
 		Image:    "bitnami/mysql:8.0",
 		Password: "123456",
+		Network:  "dev",
 	}
 
 	startRedisOpt = struct {
@@ -42,6 +43,19 @@ var (
 		Name:     "redis6",
 		Image:    "bitnami/redis:6.2",
 		Password: "123456",
+		Network:  "dev",
+	}
+
+	startZipkinOpt = struct {
+		Name     string `name:"name"`
+		Image    string `name:"image"`
+		Port     int    `name:"port"`
+		Password string `name:"password" desc:"example:6379"`
+		Network  string `name:"network"`
+	}{
+		Name:    "zipkin",
+		Image:   "openzipkin/zipkin",
+		Network: "dev",
 	}
 
 	startEtcdOpt = struct {
@@ -56,6 +70,7 @@ var (
 		Name:         "etcd",
 		Image:        "bitnami/etcd:3.5",
 		AdvertiseUrl: "http://etcd:2379",
+		Network:      "dev",
 	}
 
 	descOpt = struct {
@@ -84,15 +99,36 @@ func NewSrvStartCommand() *clitool.Command {
 			Use: "redis",
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return (&srv.BitnamiRedisOpt{
-					Name:     startRedisOpt.Name,
-					Image:    startRedisOpt.Image,
-					Password: startRedisOpt.Password,
-					Network:  startRedisOpt.Network,
-					Ports:    map[int]int{startRedisOpt.Port: 6379},
+					BaseSrvOpt: srv.BaseSrvOpt{
+						Name:     startRedisOpt.Name,
+						Image:    startRedisOpt.Image,
+						Password: startRedisOpt.Password,
+						Network:  startRedisOpt.Network,
+						Ports:    map[int]int{startRedisOpt.Port: 6379},
+					},
 				}).Start()
 			},
 		},
 		Values: &startRedisOpt,
+	})
+
+	cmd.Add(&clitool.Command{
+		Cmd: &cobra.Command{
+			Use: "zipkin",
+			RunE: func(cmd *cobra.Command, args []string) error {
+				return (&srv.ZipkinOpt{
+					BaseSrvOpt: srv.BaseSrvOpt{
+						Name:     startZipkinOpt.Name,
+						Image:    startZipkinOpt.Image,
+						Password: startZipkinOpt.Password,
+						Network:  startZipkinOpt.Network,
+						Ports:    map[int]int{startZipkinOpt.Port: startZipkinOpt.Port},
+						Command:  []string{"start-zipkin"},
+					},
+				}).Start()
+			},
+		},
+		Values: &startZipkinOpt,
 	})
 
 	cmd.Add(&clitool.Command{
