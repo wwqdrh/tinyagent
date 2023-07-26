@@ -58,6 +58,7 @@ func (o *BaseSrvOpt) Start() error {
 			Env:     o.Envs,
 			Network: o.Network,
 			Ports:   o.Ports,
+			Command: o.Command,
 		},
 	)
 	if err != nil {

@@ -44,7 +44,7 @@ func ServiceExist(name string) (swarm.Service, []byte, error) {
 		return swarm.Service{}, nil, err
 	}
 	defer cli.Close()
-
+	
 	return cli.ServiceInspectWithRaw(context.Background(), name, types.ServiceInspectOptions{})
 }
 
