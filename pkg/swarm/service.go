@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/swarm"
@@ -19,6 +20,7 @@ type ServiceOpt struct {
 	Ports   map[int]int
 	Network string
 	Command []string
+	Configs []ConfigOpt
 }
 
 func (s *ServiceOpt) GetPorts() (res []swarm.PortConfig) {
@@ -44,7 +46,7 @@ func ServiceExist(name string) (swarm.Service, []byte, error) {
 		return swarm.Service{}, nil, err
 	}
 	defer cli.Close()
-	
+
 	return cli.ServiceInspectWithRaw(context.Background(), name, types.ServiceInspectOptions{})
 }
 
@@ -66,6 +68,25 @@ func ServiceCreate(opt ServiceOpt) (types.ServiceCreateResponse, error) {
 	}
 	defer cli.Close()
 
+	confs := []*swarm.ConfigReference{}
+	for _, item := range opt.Configs {
+		conf, err := ConfigGetByName(item.Name)
+		if err != nil {
+			logger.DefaultLogger.Warn(err.Error())
+			continue
+		}
+		confs = append(confs, &swarm.ConfigReference{
+			File: &swarm.ConfigReferenceFileTarget{
+				Name: item.Target,
+				UID:  "0",
+				GID:  "0",
+				Mode: os.ModePerm,
+			},
+			ConfigName: item.Name,
+			ConfigID:   conf.ID,
+		})
+	}
+
 	return cli.ServiceCreate(context.Background(), swarm.ServiceSpec{
 		Annotations: swarm.Annotations{
 			Name: opt.Name,
@@ -75,6 +96,7 @@ func ServiceCreate(opt ServiceOpt) (types.ServiceCreateResponse, error) {
 				Image:   opt.Image,
 				Env:     opt.Env,
 				Command: opt.Command,
+				Configs: confs,
 			},
 			Networks: []swarm.NetworkAttachmentConfig{
 				{Target: opt.Network},

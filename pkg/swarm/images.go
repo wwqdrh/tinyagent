@@ -5,9 +5,11 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"path"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/wwqdrh/gokit/ostool"
 )
 
 func ImageExist(name string) error {
@@ -72,4 +74,9 @@ func ImageDelete(name string, opts types.ImageRemoveOptions) ([]types.ImageDelet
 	defer cli.Close()
 
 	return cli.ImageRemove(context.Background(), name, opts)
+}
+
+func ImageBuild(dockerfile string, imageName string) error {
+	workdir := path.Dir(dockerfile)
+	return ostool.RunCmdStd(fmt.Sprintf("cd %s; docker build -t %s .", workdir, imageName))
 }

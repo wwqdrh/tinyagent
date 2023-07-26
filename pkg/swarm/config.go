@@ -9,13 +9,36 @@ import (
 	"github.com/docker/docker/client"
 )
 
-func ConfigCreate(spec swarm.ConfigSpec) (types.ConfigCreateResponse, error) {
+type ConfigOpt struct {
+	Name   string
+	Target string
+}
+
+func ConfigCreate(name string, data []byte) (types.ConfigCreateResponse, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
 	if err != nil {
 		return types.ConfigCreateResponse{}, err
 	}
 	defer cli.Close()
-	return cli.ConfigCreate(context.Background(), spec)
+	return cli.ConfigCreate(context.Background(), swarm.ConfigSpec{
+		Annotations: swarm.Annotations{
+			Name: name,
+		},
+		Data: data,
+	})
+}
+
+func ConfigExist(name string) (bool, error) {
+	res, err := ConfigList(types.ConfigListOptions{})
+	if err != nil {
+		return false, err
+	}
+	for _, item := range res {
+		if item.Spec.Name == name {
+			return true, nil
+		}
+	}
+	return false, errors.New("not exist this config")
 }
 
 func ConfigList(opts types.ConfigListOptions) ([]swarm.Config, error) {
