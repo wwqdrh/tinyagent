@@ -16,6 +16,7 @@ type BaseSrvOpt struct {
 	Network  string
 	Ports    map[int]int
 	Envs     []string
+	Args     []string
 	Command  []string
 	Configs  []swarm.ConfigOpt
 }
@@ -60,6 +61,7 @@ func (o *BaseSrvOpt) Start() error {
 			Network: o.Network,
 			Ports:   o.Ports,
 			Command: o.Command,
+			Args:    o.Args,
 			Configs: o.Configs,
 		},
 	)

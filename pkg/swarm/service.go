@@ -19,6 +19,7 @@ type ServiceOpt struct {
 	Env     []string
 	Ports   map[int]int
 	Network string
+	Args    []string
 	Command []string
 	Configs []ConfigOpt
 }
@@ -96,6 +97,7 @@ func ServiceCreate(opt ServiceOpt) (types.ServiceCreateResponse, error) {
 				Image:   opt.Image,
 				Env:     opt.Env,
 				Command: opt.Command,
+				Args:    opt.Args,
 				Configs: confs,
 			},
 			Networks: []swarm.NetworkAttachmentConfig{
