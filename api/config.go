@@ -29,12 +29,7 @@ func ConfigCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if resp, err := pkg_swarm.ConfigCreate(swarm.ConfigSpec{
-		Annotations: swarm.Annotations{
-			Name: name[0],
-		},
-		Data: []byte(content),
-	}); err != nil {
+	if resp, err := pkg_swarm.ConfigCreate(name[0], []byte(content)); err != nil {
 		EchoError(w, ServerError, err)
 	} else {
 		EchoJSON(w, ServerOK, H{"id": resp.ID})

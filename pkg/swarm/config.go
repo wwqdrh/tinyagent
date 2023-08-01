@@ -2,11 +2,12 @@ package swarm
 
 import (
 	"context"
-	"errors"
+	"os"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
+	"github.com/pkg/errors"
 )
 
 type ConfigOpt struct {
@@ -14,18 +15,54 @@ type ConfigOpt struct {
 	Target string
 }
 
-func ConfigCreate(name string, data []byte) (types.ConfigCreateResponse, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+type ConfigEntryFile struct {
+	Source string
+	Name   string
+	Target string
+}
+
+func (c ConfigEntryFile) Create() error {
+	data, err := os.ReadFile(c.Source)
 	if err != nil {
-		return types.ConfigCreateResponse{}, err
+		return errors.Wrapf(err, "读取文件失败")
 	}
-	defer cli.Close()
-	return cli.ConfigCreate(context.Background(), swarm.ConfigSpec{
-		Annotations: swarm.Annotations{
-			Name: name,
-		},
-		Data: data,
-	})
+	_, err = ConfigCreate(c.Name, data)
+	if err != nil {
+		return errors.Wrapf(err, "创建配置文件失败")
+	}
+	return nil
+}
+
+type ConfigEntrySource struct {
+	Data   []byte
+	Name   string
+	Target string
+}
+
+func (c ConfigEntrySource) Create() error {
+	_, err := ConfigCreate(c.Name, c.Data)
+	if err != nil {
+		return errors.Wrapf(err, "创建配置文件失败")
+	}
+	return nil
+}
+
+func ConfigCreate(name string, data []byte) (types.ConfigCreateResponse, error) {
+	if ok, err := ConfigExist(name); err != nil || !ok {
+		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+		if err != nil {
+			return types.ConfigCreateResponse{}, err
+		}
+		defer cli.Close()
+		return cli.ConfigCreate(context.Background(), swarm.ConfigSpec{
+			Annotations: swarm.Annotations{
+				Name: name,
+			},
+			Data: data,
+		})
+	} else {
+		return types.ConfigCreateResponse{}, errors.Wrapf(err, "配置已经存在")
+	}
 }
 
 func ConfigExist(name string) (bool, error) {
