@@ -33,4 +33,6 @@ func TestGetCurrentService(t *testing.T) {
 	} else {
 		fmt.Println(srvid)
 	}
+
+	fmt.Println(OverlayIP())
 }

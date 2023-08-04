@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/swarm"
@@ -156,6 +157,14 @@ func CurrentService() (string, error) {
 	}
 
 	return "", errors.New("not found")
+}
+
+func OverlayIP() string {
+	res, err := getClientIp("eth0")
+	if err != nil {
+		return "127.0.0.1"
+	}
+	return strings.Split(res, "/")[0]
 }
 
 // 寻找eth0这个网卡对应的ip
