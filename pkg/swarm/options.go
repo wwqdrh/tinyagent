@@ -5,10 +5,6 @@ import (
 	"github.com/docker/docker/api/types/volume"
 )
 
-const (
-	SupportedDockerAPIVersion = "1.30"
-)
-
 type (
 	DockerEngineStatus int
 
@@ -67,7 +63,7 @@ type DockerSnapshot struct {
 
 type DockerSnapshotRaw struct {
 	Containers []types.Container       `json:"Containers" swaggerignore:"true"`
-	Volumes    volume.VolumeListOKBody `json:"Volumes" swaggerignore:"true"`
+	Volumes    volume.ListResponse     `json:"Volumes" swaggerignore:"true"`
 	Networks   []types.NetworkResource `json:"Networks" swaggerignore:"true"`
 	Images     []types.ImageSummary    `json:"Images" swaggerignore:"true"`
 	Info       types.Info              `json:"Info" swaggerignore:"true"`

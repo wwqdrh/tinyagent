@@ -11,7 +11,7 @@ import (
 )
 
 func GetContainersWithLabel(value string) ([]types.Container, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func GetContainersWithLabel(value string) ([]types.Container, error) {
 }
 
 func GetContainerLogs(containerName string, tail string) ([]byte, []byte, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, nil, err
 	}

@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 
-	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/volume"
 	pkg_swarm "github.com/wwqdrh/tinyagent/pkg/swarm"
 )
@@ -14,7 +13,7 @@ type VolumeListRes struct {
 }
 
 func VolumeList(w http.ResponseWriter, r *http.Request) {
-	res, err := pkg_swarm.VolumeList(filters.Args{})
+	res, err := pkg_swarm.VolumeList(volume.ListOptions{})
 	if err != nil {
 		EchoError(w, ServerError, err)
 		return
@@ -41,7 +40,7 @@ func VolumeCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v, err := pkg_swarm.VolumeAdd(volume.VolumeCreateBody{
+	v, err := pkg_swarm.VolumeAdd(volume.CreateOptions{
 		Driver: req.Driver,
 		Name:   req.Name,
 	})

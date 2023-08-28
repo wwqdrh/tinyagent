@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/volume"
 	"github.com/docker/docker/client"
 	"github.com/wwqdrh/gokit/logger"
 	"go.uber.org/zap"
 )
 
 func CreateSnapshot() (*DockerSnapshot, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
@@ -178,7 +178,7 @@ func snapshotImages(snapshot *DockerSnapshot, cli *client.Client) error {
 }
 
 func snapshotVolumes(snapshot *DockerSnapshot, cli *client.Client) error {
-	volumes, err := cli.VolumeList(context.Background(), filters.Args{})
+	volumes, err := cli.VolumeList(context.Background(), volume.ListOptions{})
 	if err != nil {
 		return err
 	}

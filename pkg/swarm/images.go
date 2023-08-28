@@ -32,7 +32,8 @@ func ImageExist(name string) error {
 }
 
 func ImageList(opts types.ImageListOptions) ([]types.ImageSummary, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	// cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +42,7 @@ func ImageList(opts types.ImageListOptions) ([]types.ImageSummary, error) {
 }
 
 func ImagePull(name string, opts types.ImagePullOptions) (string, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return "", err
 	}
@@ -69,7 +70,7 @@ func ImagePull(name string, opts types.ImagePullOptions) (string, error) {
 }
 
 func ImageDelete(name string, opts types.ImageRemoveOptions) ([]types.ImageDeleteResponseItem, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}

@@ -13,7 +13,7 @@ var (
 )
 
 func IsSwarm() (bool, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return false, err
 	}

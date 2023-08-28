@@ -43,7 +43,7 @@ func (s *ServiceOpt) GetPorts() (res []swarm.PortConfig) {
 }
 
 func ServiceExist(name string) (swarm.Service, []byte, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return swarm.Service{}, nil, err
 	}
@@ -64,7 +64,7 @@ func ServiceCreate(opt ServiceOpt) (types.ServiceCreateResponse, error) {
 		}
 	}
 
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return types.ServiceCreateResponse{}, err
 	}
@@ -113,7 +113,7 @@ func ServiceCreate(opt ServiceOpt) (types.ServiceCreateResponse, error) {
 }
 
 func ServiceRemove(name string) error {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}
@@ -130,7 +130,7 @@ func CurrentService() (string, error) {
 		return "", err
 	}
 
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		logger.DefaultLogger.Error(err.Error())
 		return "", err

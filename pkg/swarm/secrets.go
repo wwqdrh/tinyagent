@@ -10,7 +10,7 @@ import (
 )
 
 func SecretList(opts types.SecretListOptions) ([]swarm.Secret, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func SecretList(opts types.SecretListOptions) ([]swarm.Secret, error) {
 }
 
 func SecretAdd(name, content string) (types.SecretCreateResponse, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return types.SecretCreateResponse{}, err
 	}
@@ -35,7 +35,7 @@ func SecretAdd(name, content string) (types.SecretCreateResponse, error) {
 }
 
 func SecretRemove(name string) error {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}

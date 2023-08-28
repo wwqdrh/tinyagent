@@ -28,7 +28,7 @@ func GetServiceIP(domain string) string {
 }
 
 func NetworkList(opts types.NetworkListOptions) ([]types.NetworkResource, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func NetworkList(opts types.NetworkListOptions) ([]types.NetworkResource, error)
 }
 
 func NetworkAdd(name, driver string) (types.NetworkCreateResponse, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return types.NetworkCreateResponse{}, err
 	}
@@ -52,7 +52,7 @@ func NetworkAdd(name, driver string) (types.NetworkCreateResponse, error) {
 }
 
 func NetworkRemove(name string) error {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}

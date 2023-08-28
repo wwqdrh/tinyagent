@@ -49,7 +49,7 @@ func (c ConfigEntrySource) Create() error {
 
 func ConfigCreate(name string, data []byte) (types.ConfigCreateResponse, error) {
 	if ok, err := ConfigExist(name); err != nil || !ok {
-		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 		if err != nil {
 			return types.ConfigCreateResponse{}, err
 		}
@@ -79,7 +79,7 @@ func ConfigExist(name string) (bool, error) {
 }
 
 func ConfigList(opts types.ConfigListOptions) ([]swarm.Config, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func ConfigList(opts types.ConfigListOptions) ([]swarm.Config, error) {
 }
 
 func ConfigGetByName(name string) (swarm.Config, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return swarm.Config{}, err
 	}
@@ -108,7 +108,7 @@ func ConfigGetByName(name string) (swarm.Config, error) {
 }
 
 func ConfigUpdate(spec swarm.ConfigSpec) error {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}
@@ -126,7 +126,7 @@ func ConfigUpdate(spec swarm.ConfigSpec) error {
 }
 
 func ConfigDelete(name string) error {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithVersion(SupportedDockerAPIVersion))
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}
