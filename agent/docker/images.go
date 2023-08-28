@@ -1,4 +1,4 @@
-package swarm
+package docker
 
 import (
 	"bytes"

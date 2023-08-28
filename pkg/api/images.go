@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/docker/docker/api/types"
-	pkg_swarm "github.com/wwqdrh/tinyagent/pkg/swarm"
+	"github.com/wwqdrh/tinyagent/agent/docker"
 )
 
 type ImageListRes struct {
@@ -14,7 +14,7 @@ type ImageListRes struct {
 }
 
 func ImageList(w http.ResponseWriter, r *http.Request) {
-	images, err := pkg_swarm.ImageList(types.ImageListOptions{
+	images, err := docker.ImageList(types.ImageListOptions{
 		All: true,
 	})
 	if err != nil {
@@ -46,7 +46,7 @@ func ImagePull(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	out, err := pkg_swarm.ImagePull(req.Name, types.ImagePullOptions{})
+	out, err := docker.ImagePull(req.Name, types.ImagePullOptions{})
 	if err != nil {
 		EchoError(w, ServerError, err)
 		return
@@ -66,7 +66,7 @@ func ImageRemove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := pkg_swarm.ImageDelete(req.Name, types.ImageRemoveOptions{})
+	resp, err := docker.ImageDelete(req.Name, types.ImageRemoveOptions{})
 	if err != nil {
 		EchoError(w, ServerError, err)
 		return

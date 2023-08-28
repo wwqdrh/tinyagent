@@ -2,12 +2,12 @@ package api
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/swarm"
-	pkg_swarm "github.com/wwqdrh/tinyagent/pkg/swarm"
+	pkg_swarm "github.com/wwqdrh/tinyagent/agent/swarm"
 )
 
 func ConfigCreate(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +16,7 @@ func ConfigCreate(w http.ResponseWriter, r *http.Request) {
 		EchoError(w, ClientParamInvalid, err)
 		return
 	} else {
-		if data, err := ioutil.ReadAll(f); err != nil {
+		if data, err := io.ReadAll(f); err != nil {
 			EchoError(w, ClientParamInvalid, err)
 			return
 		} else {
@@ -66,7 +66,7 @@ func ConfigUpdate(w http.ResponseWriter, r *http.Request) {
 		EchoError(w, ClientParamInvalid, err)
 		return
 	} else {
-		if data, err := ioutil.ReadAll(f); err != nil {
+		if data, err := io.ReadAll(f); err != nil {
 			EchoError(w, ClientParamInvalid, err)
 			return
 		} else {

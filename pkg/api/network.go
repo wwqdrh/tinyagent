@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/docker/docker/api/types"
-	pkg_swarm "github.com/wwqdrh/tinyagent/pkg/swarm"
+	"github.com/wwqdrh/tinyagent/agent/docker"
 )
 
 type NetworkListRes struct {
@@ -13,7 +13,7 @@ type NetworkListRes struct {
 }
 
 func NetworkList(w http.ResponseWriter, r *http.Request) {
-	res, err := pkg_swarm.NetworkList(types.NetworkListOptions{})
+	res, err := docker.NetworkList(types.NetworkListOptions{})
 	if err != nil {
 		EchoError(w, ServerError, err)
 	}
@@ -38,11 +38,14 @@ func NetworkCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := pkg_swarm.NetworkAdd(req.Name, req.Driver)
+	err := docker.NetworkAdd(docker.NetworkSpec{
+		Name:   req.Name,
+		Driver: req.Driver,
+	})
 	if err != nil {
 		EchoError(w, ServerError, err)
 	} else {
-		EchoJSON(w, ServerOK, res)
+		EchoJSON(w, ServerOK, "ok")
 	}
 }
 
@@ -56,7 +59,7 @@ func NetworkRemove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := pkg_swarm.NetworkRemove(req.Name); err != nil {
+	if err := docker.NetworkRemove(req.Name); err != nil {
 		EchoError(w, ServerError, err)
 	} else {
 		EchoJSON(w, ServerOK, nil)

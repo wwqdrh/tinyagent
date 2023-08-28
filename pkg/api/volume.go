@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/docker/docker/api/types/volume"
-	pkg_swarm "github.com/wwqdrh/tinyagent/pkg/swarm"
+	"github.com/wwqdrh/tinyagent/agent/docker"
 )
 
 type VolumeListRes struct {
@@ -13,7 +13,7 @@ type VolumeListRes struct {
 }
 
 func VolumeList(w http.ResponseWriter, r *http.Request) {
-	res, err := pkg_swarm.VolumeList(volume.ListOptions{})
+	res, err := docker.VolumeList(volume.ListOptions{})
 	if err != nil {
 		EchoError(w, ServerError, err)
 		return
@@ -40,14 +40,14 @@ func VolumeCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v, err := pkg_swarm.VolumeAdd(volume.CreateOptions{
+	err := docker.VolumeAdd(docker.VolumeSpec{
 		Driver: req.Driver,
 		Name:   req.Name,
 	})
 	if err != nil {
 		EchoError(w, ServerError, err)
 	} else {
-		EchoJSON(w, ServerOK, v)
+		EchoJSON(w, ServerOK, "ok")
 	}
 }
 
@@ -62,7 +62,7 @@ func VolumeRemove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := pkg_swarm.VolumeDelete(req.Name, req.Force); err != nil {
+	if err := docker.VolumeDelete(req.Name, req.Force); err != nil {
 		EchoError(w, ServerError, err)
 	} else {
 		EchoJSON(w, ServerOK, nil)

@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/wwqdrh/gokit/clitool"
-	"github.com/wwqdrh/tinyagent/pkg/swarm"
-	"github.com/wwqdrh/tinyagent/srv"
+	"github.com/wwqdrh/tinyagent/agent/swarm"
+	"github.com/wwqdrh/tinyagent/pkg/srv"
 )
 
 var (

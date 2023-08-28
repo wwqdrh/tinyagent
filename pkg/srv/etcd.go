@@ -3,7 +3,7 @@ package srv
 import (
 	"fmt"
 
-	"github.com/wwqdrh/tinyagent/pkg/swarm"
+	"github.com/wwqdrh/tinyagent/agent/swarm"
 )
 
 type BitnamiEtcdOpt struct {

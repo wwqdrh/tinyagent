@@ -1,29 +1,21 @@
-package main
+package tinyagent
 
 import (
-	"context"
 	"flag"
-	"fmt"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
-	"github.com/wwqdrh/gokit/logger"
-	"github.com/wwqdrh/tinyagent/api"
-	"go.uber.org/zap"
+	"github.com/wwqdrh/tinyagent/pkg/api"
 )
 
 var (
 	Addr = flag.Int("addr", 8000, "服务监听端口")
 )
 
-func init() {
-	flag.Parse()
+type HttpEngine interface {
+	HandleFunc(string, http.HandlerFunc)
 }
 
-func register(mux *http.ServeMux) {
+func RegisterAPI(mux HttpEngine) {
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
@@ -44,30 +36,4 @@ func register(mux *http.ServeMux) {
 	mux.HandleFunc("/swarm/network/list", api.NetworkList)
 	mux.HandleFunc("/swarm/network/create", api.NetworkCreate)
 	mux.HandleFunc("/swarm/network/remove", api.NetworkRemove)
-}
-
-func main() {
-	mux := http.NewServeMux()
-	register(mux)
-	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", *Addr),
-		WriteTimeout: time.Second * 3,
-		Handler:      mux,
-	}
-	logger.DefaultLogger.Infox("Starting httpserver at :%d\n", nil, *Addr)
-	go func() {
-		if err := server.ListenAndServe(); err != nil {
-			logger.DefaultLogger.Info("api exit...")
-			return
-		}
-	}()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := server.Shutdown(ctx); err != nil {
-		logger.DefaultLogger.Error("server shutdown error", zap.Error(err))
-	}
 }

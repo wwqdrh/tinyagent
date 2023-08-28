@@ -13,6 +13,16 @@ type Client struct {
 	cli *client.Client
 }
 
+func withCli(callback func(cli *client.Client) error) error {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return err
+	}
+	defer cli.Close()
+
+	return callback(cli)
+}
+
 func NewClient() (Client, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {

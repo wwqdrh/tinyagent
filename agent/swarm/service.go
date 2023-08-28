@@ -12,6 +12,7 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/client"
 	"github.com/wwqdrh/gokit/logger"
+	"github.com/wwqdrh/tinyagent/agent/docker"
 )
 
 type ServiceOpt struct {
@@ -53,12 +54,12 @@ func ServiceExist(name string) (swarm.Service, []byte, error) {
 }
 
 func ServiceCreate(opt ServiceOpt) (types.ServiceCreateResponse, error) {
-	if err := ImageExist(opt.Image); err != nil {
+	if err := docker.ImageExist(opt.Image); err != nil {
 		if err != ErrImageNotExist {
 			return types.ServiceCreateResponse{}, err
 		}
 
-		_, err := ImagePull(opt.Image, types.ImagePullOptions{})
+		_, err := docker.ImagePull(opt.Image, types.ImagePullOptions{})
 		if err != nil {
 			return types.ServiceCreateResponse{}, err
 		}

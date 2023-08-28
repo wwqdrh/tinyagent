@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/docker/docker/api/types"
-	pkg_swarm "github.com/wwqdrh/tinyagent/pkg/swarm"
+	pkg_swarm "github.com/wwqdrh/tinyagent/agent/swarm"
 )
 
 type SecretListRes struct {
